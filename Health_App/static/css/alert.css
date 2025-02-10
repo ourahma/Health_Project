@@ -1,0 +1,87 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #0676ed;
+  --background: #222b45;
+  --warning: #f2a600;
+  --success: #12c99b;
+  --error: #e41749;
+  --dark: #151a30;
+}
+
+.alert {
+  min-height: 67px;
+  width: 320px; /* Adjust the width as needed */
+  border-radius: 12px;
+  padding: 16px 22px 17px 20px;
+  display: flex;
+  align-items: center;
+  position: fixed; /* Ensure the alert remains fixed */
+  top: 20px; /* Adjust the distance from the top as needed */
+  right: 20px; /* Adjust the distance from the right as needed */
+  z-index: 99999; /* Ensure the alert is above other elements */
+  animation: slideIn 0.5s ease forwards; /* Add animation for sliding in */
+}
+
+
+@keyframes slideIn {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(0); }
+}
+.alert-warning {
+  background: var(--warning);
+}
+.alert-success {
+  background: var(--success);
+}
+.alert-primary {
+  background: var(--primary);
+}
+.alert-dark {
+  background: var(--dark);
+}
+.alert-error {
+  background: var(--error);
+}
+.alert .icon__wrapper {
+  height: 34px;
+  width: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.253);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.alert .icon__wrapper span {
+  font-size: 21px;
+  color: #fff;
+}
+.alert p {
+  color: #fff;
+  font-family: Verdana;
+  margin-left: 10px;
+}
+.alert p a,
+.alert p a:visited,
+.alert p a:active {
+  color: #fff;
+}
+.alert .open {
+  margin-left: auto;
+  margin-right: 5px;
+}
+.alert .close, .alert .open {
+  color: #fff;
+  transition: transform 0.5s;
+  font-size: 18px;
+  cursor: pointer;
+}
+.alert .close:hover, .alert .open:hover {
+  transform: scale(1.3);
+}

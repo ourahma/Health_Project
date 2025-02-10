@@ -1,0 +1,155 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <style>
+    .centered-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      width: 100%;
+    }
+    .form-container, .table-container {
+      width: 100%; /* Rendre la table plus large */
+      max-width: 1200px; /* Augmenter la largeur maximale */
+      margin: 20px 0;
+    }
+    .action-buttons {
+      display: flex;
+      align-items: center;
+    }
+    .action-buttons form, .action-buttons a {
+      margin-right: 5px;
+    }
+    .icon-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .action-buttons form input[name="montant"] {
+      margin-right: 10px; /* Ajouter de l'espace entre le champ Montant et le bouton */
+    }
+    .alert {
+      padding: 15px;
+      margin-bottom: 20px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+    }
+    .alert-success {
+      color: #3c763d;
+      background-color: #dff0d8;
+      border-color: #d6e9c6;
+    }
+    .alert-warning {
+      color: #8a6d3b;
+      background-color: #fcf8e3;
+      border-color: #faebcc;
+    }
+    .alert-error {
+      color: #a94442;
+      background-color: #f2dede;
+      border-color: #ebccd1;
+    }
+    .delai-depasse {
+      background-color: #ffcccc; /* Couleur de fond rouge pour les lignes en retard */
+    }
+  </style>
+</head>
+<body>
+  <div class="content-wrapper">
+    <div class="row">
+      <div class="col-md-12 grid-margin">
+        <div class="row">
+          <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+            <h3 class="font-weight-bold">Bonjour</h3>
+            <h6 class="font-weight-normal mb-0">
+              Veuillez remplir les données du formulaire
+            </h6>
+          </div>
+        </div>
+        <div class="centered-container">
+        
+          <div class="form-container">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Formulaire de Rendez-vous</h4>
+                <form method="post" class="forms-sample">
+                  {% csrf_token %}
+                  {{ form.as_p }}
+                  <button type="submit" class="btn btn-primary mr-2">Enregistrer</button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="table-container">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Liste des rendez-vous</h4>
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>CNI</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Date et Heure</th>
+                        <th></th>
+                        <th>Montant (MAD)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for rendez_vous in rendez_vous_list %}
+                      <tr class="{% if rendez_vous.date_time < maintenant and rendez_vous.status == 'en attente' %}delai-depasse{% endif %}">
+                        <td>{{ rendez_vous.id }}</td>
+                        <td>{{ rendez_vous.patient.cni }}</td>
+                        <td>{{ rendez_vous.patient.nom }}</td>
+                        <td>{{ rendez_vous.patient.prenom }}</td>
+                        <td>{{ rendez_vous.date_time }}</td>
+                        <td>
+                          {% if rendez_vous.consultation %}
+                            {{ rendez_vous.consultation.montant }}
+                          {% else %}
+                            -
+                          {% endif %}
+                        </td>
+                        <td>
+                          <div class="action-buttons">
+                            {% if rendez_vous.status == 'en attente' %}
+                            <form method="post" action="{% url 'valider_rendez_vous' rendez_vous.id %}">
+                              {% csrf_token %}
+                              <input type="number" name="montant" step="0.01" placeholder="Montant" required>
+                              <button type="submit" class="btn btn-success">Valider</button>
+                            </form>
+                            {% else %}
+                            Validé
+                            {% endif %}
+                            <a href="{% url 'modifier_rendez_vous' rendez_vous.id %}" class="btn btn-info">
+                              Modifier
+                            </a>
+                            <form method="post" action="{% url 'supprimer_rendez_vous' rendez_vous.id %}" style="display: inline;">
+                              {% csrf_token %}
+                              <button type="submit" class="icon-button" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce rendez-vous ?')">
+                                <img src="{% static 'icons/trash-icon.png' %}" alt="Supprimer" width="24" height="24">
+                              </button>
+                            </form>
+                          </div>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endblock content %}
+</body>
+</html>

@@ -1,0 +1,77 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <style>
+    .centered-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      width: 100%;
+    }
+    .table-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="content-wrapper">
+    <div class="row">
+      <div class="col-md-12 grid-margin">
+        <div class="row">
+          <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+            <h3 class="font-weight-bold">Liste des Rendez-vous Validés</h3>
+          </div>
+        </div>
+        <div class="centered-container">
+          <div class="table-container">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Vos Rendez-vous</h4>
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>CNI</th>
+                        <th>Date et Heure</th>
+                        <th>Montant (MAD)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for rendez_vous in rendez_vous_valides %}
+                      <tr>
+                        <td>{{ rendez_vous.id }}</td>
+                        <td>{{ rendez_vous.patient.nom }}</td>
+                        <td>{{ rendez_vous.patient.prenom }}</td>
+                        <td>{{ rendez_vous.patient.cni }}</td>
+                        <td>{{ rendez_vous.date_time }}</td>
+                        <td>
+                          {% if rendez_vous.consultation %}
+                            {{ rendez_vous.consultation.montant }}
+                          {% else %}
+                            -
+                          {% endif %}
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endblock content %}
+</body>
+</html>

@@ -1,0 +1,101 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <style>
+    .centered-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      width: 100%;
+    }
+    .form-container, .table-container {
+      width: 90%;  
+      max-width: 1200px;  
+      margin: 20px 0;
+    }
+    .table-responsive {
+      overflow-x: auto;
+    }
+    .btn-group {
+      display: flex;
+      gap: 10px; 
+    }
+    .btn-group .btn {
+      margin: 0;  
+    }
+    .bottom-right-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="content-wrapper">
+    <div class="row">
+      <div class="col-md-12 grid-margin">
+        <div class="row">
+          <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+            <h3 class="font-weight-bold">Consultations</h3>
+          </div>
+        </div>
+        <div class="centered-container">
+          <div class="table-container">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title"></h4>
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>CNI</th>
+                        <th>Date et Heure</th>
+                        <th>Maladie</th>
+                        <th></th> 
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for consultation in consultations %}
+                      <tr>
+                        <td>{{ consultation.rendez_vous.patient.nom }}</td>
+                        <td>{{ consultation.rendez_vous.patient.prenom }}</td>
+                        <td>{{ consultation.rendez_vous.patient.cni }}</td>
+                        <td>{{ consultation.rendez_vous.date_time }}</td>
+                        <td>
+                          <form method="POST" action="{% url 'ajouter_maladie' consultation.id %}" class="btn-group">
+                            {% csrf_token %}
+                            <select name="maladie" class="form-select">
+                              {% for maladie in maladies %}
+                              <option value="{{ maladie.id }}" {% if consultation.maladie and consultation.maladie.id == maladie.id %}selected{% endif %}>
+                                {{ maladie.nom }}
+                              </option>
+                              {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-primary btn-sm">Enregistrer</button>
+                          </form>
+                        </td>
+                        <td>
+                          <a href="{% url 'generer_rapport' consultation.id %}" class="btn btn-success btn-sm">Générer Rapport</a>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <a href="{% url 'afficher_consultations' %}" class="btn btn-primary bottom-right-button">Afficher les consultations</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+{% endblock content %}

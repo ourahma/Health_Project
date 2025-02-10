@@ -1,0 +1,232 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css"
+    />
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>MediCare</title>
+    <!-- plugins:css -->
+
+    <link rel="stylesheet" href="{% static 'vendors/feather/feather.css' %}" />
+    <link
+      rel="stylesheet"
+      href="{% static 'vendors/ti-icons/css/themify-icons.css' %}"
+    />
+    <link
+      rel="stylesheet"
+      href="{% static 'vendors/css/vendor.bundle.base.css' %}"
+    />
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link
+      rel="stylesheet"
+      href="{% static 'vendors/datatables.net-bs4/dataTables.bootstrap4.css' %} "
+    />
+    <link
+      rel="stylesheet"
+      href="{% static 'vendors/ti-icons/css/themify-icons.css' %} "
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'js/select.dataTables.min.css' %} "
+    />
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link
+      rel="stylesheet"
+      href="{% static 'css/vertical-layout-light/style.css' %} "
+    />
+    <link
+      rel="stylesheet"
+      href="{% static 'css/maps/vertical-layout-light/style.css.map' %} "
+    />
+    <!-- endinject -->
+    <link rel="shortcut icon" href="{% static 'images/favicon.png' %} " />
+  </head>
+  <body>
+    {% include 'pages/alert.html' %}
+    <div class="container-scroller">
+      <!-- partial:partials/_navbar.html -->
+      <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+        <div
+          class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center"
+        >
+          <a class="navbar-brand brand-logo mr-5" href="index.html"
+            ><img src="{% static 'images/logo.png' %} " class="mr-2" alt="logo"
+          /></a>
+          <a class="navbar-brand brand-logo-mini" href="index.html"
+            ><img src="{% static 'images/favicon.png' %} " alt="logo"
+          /></a>
+        </div>
+        <div
+          class="navbar-menu-wrapper d-flex align-items-center justify-content-end"
+        >
+          <button
+            class="navbar-toggler navbar-toggler align-self-center"
+            type="button"
+            data-toggle="minimize"
+          >
+            <span class="icon-menu"></span>
+          </button>
+          
+          <ul class="navbar-nav navbar-nav-right">
+            <li class="nav-item dropdown">
+              <div
+                class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
+                aria-labelledby="notificationDropdown"
+              ></div>
+            </li>
+            <li class="nav-item nav-profile dropdown">
+              <a class="dropdown-item" href="{% url 'logout' %}">
+                <i class="ti-power-off text-primary"></i>
+                Logout
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="container-fluid page-body-wrapper">
+        <!-- Side Bar -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+          <ul class="nav">
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.path == '/' %}active{% endif %}"
+                href="{% url 'home' %}"
+              >
+                <i class="icon-grid menu-icon"></i>
+                <span class="menu-title">Dashboard</span>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'maladie' %}">
+                <i class="icon-grid menu-icon"></i>
+                <span class="menu-title">Les maladies</span>
+              </a>
+            </li>
+            
+            <li class="nav-item">
+              <a
+                class="nav-link "
+                 href="{% url 'rendez_vous' %}"
+              >
+                <i class="icon-grid menu-icon"></i>
+                <span class="menu-title">Les Rendez-Vous</span>
+              </a>
+            </li>
+            
+            <li class="nav-item">
+              <a
+                class="nav-link "
+                  href="{% url 'consultation_view' %}"
+              >
+                <i class="icon-grid menu-icon"></i>
+                <span class="menu-title">Les consultations</span>
+              </a>
+            </li>
+            {% if request.user.is_medcin %}
+           
+              <li class="nav-item">
+                <a
+                  class="nav-link {% if request.path == '/diabetes_prediction/' %}active{% endif %}"
+                  href="{% url 'diabetes_prediction' %}"
+                >
+                  <i class="icon-grid menu-icon"></i>
+                  <span class="menu-title">Prédiction</span>
+                </a>
+              </li>
+            </li>
+            {% endif %} 
+            {% if request.user.is_medcin %}
+
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'secretaires' %}">
+                <i class="mdi mdi-account-multiple"></i>
+                <span class="menu-title">Vos secretaires</span>
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
+        <!-- Main content -->
+        <div class="main-panel">
+          {% block content %} {% endblock content %}
+
+          <!-- partial:partials/_footer.html -->
+          <footer class="footer">
+            <div
+              class="d-sm-flex justify-content-center justify-content-sm-between"
+            >
+              <span
+                class="text-muted text-center text-sm-left d-block d-sm-inline-block"
+                >Copyright ©
+              </span>
+            </div>
+          </footer>
+          <!-- partial -->
+        </div>
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+
+    <!-- plugins:js -->
+    <script src="{% static 'vendors/js/vendor.bundle.base.js' %} "></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+    <script src="{% static 'vendors/chart.js/Chart.min.js' %} "></script>
+    <script src="{% static 'vendors/datatables.net/jquery.dataTables.js' %} "></script>
+    <script src="{% static 'vendors/datatables.net-bs4/dataTables.bootstrap4.js' %} "></script>
+    <script src="{% static 'js/dataTables.select.min.js' %} "></script>
+
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="{% static 'js/off-canvas.js' %} "></script>
+    <script src="{% static 'js/hoverable-collapse.js' %} "></script>
+    <script src="{% static 'js/template.js' %} "></script>
+    <script src="{% static 'js/settings.js' %} "></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        let links = document.querySelectorAll("nav a");
+        let currentPath = window.location.pathname;
+
+        links.forEach((link) => {
+          if (link.getAttribute("href") === currentPath) {
+            link.classList.add("active"); // Adds the class
+            link.style.color = "white"; // Example: Change text color
+            link.style.backgroundColor = "#4b49ac"; // Example: Change background
+            link.style.fontWeight = "bold"; // Example: Make it bold
+            link.style.borderBottom = "2px solid white"; // Example: Underline
+          } else {
+            link.classList.remove("active"); // Remove class from other links
+            link.style.color = ""; // Reset to default
+            link.style.backgroundColor = ""; // Reset background
+            link.style.fontWeight = ""; // Reset font weight
+            link.style.borderBottom = ""; // Reset underline
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

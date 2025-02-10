@@ -1,0 +1,68 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-scroller">
+    <div class="container-fluid page-body-wrapper full-page-wrapper">
+        <div class="content-wrapper d-flex align-items-center auth px-0">
+            <div class="row w-100 mx-0">
+                <div class="col-lg-10 mx-auto">
+                    <div class="auth-form-light text-left py-5 px-4 px-sm-5">
+                        <h6 class="font-weight-light">Saisir les données pour la prédiction du diabète</h6>
+                        <form class="pt-3" method="POST" action="{% url 'diabetes_prediction' %}">
+                            {% csrf_token %}
+
+                            <!-- Dropdown de sélection du patient -->
+                            <div class="form-group">
+                                <label for="patient">Patient concerné</label>
+                                <select name="patient_id" class="form-control">
+                                    <option value="" disabled selected>Choisir un patient</option>
+                                    {% for patient in patients %}
+                                        <option value="{{ patient.id }}">{{ patient.nom }} {{ patient.prenom }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="number" step="0.01" name="glucose" class="form-control form-control-lg" placeholder="Glucose" required>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="number" name="insuline" step="0.01" class="form-control form-control-lg" placeholder="Insuline" required>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="number" name="bmi" step="0.01" class="form-control form-control-lg" placeholder="BMI" required>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="number" name="age" class="form-control form-control-lg" placeholder="Age" required>
+                            </div>
+
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-block btn-success btn-lg font-weight-medium auth-form-btn">Prédire</button>
+                            </div>
+                        </form>
+
+                        <!-- Affichage du résultat dans une carte -->
+                        {% if prediction is not None %}
+                        <div class="card mt-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Résultat de la Prédiction</h5>
+                                <p class="card-text">
+                                    <strong>Patient :</strong> {{ patient.nom }} {{ patient.prenom }} <br>
+                                    <strong>Résultat :</strong> {% if prediction %} <span class="text-danger">Diabétique</span> {% else %} <span class="text-success">Non diabétique</span> {% endif %}
+                                    <br>
+                                    <strong>Probabilité :</strong> {{ probability_percentage }}%
+                                </p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

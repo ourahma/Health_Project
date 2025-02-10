@@ -1,0 +1,83 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <style>
+    .centered-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      width: 100%;
+    }
+    .table-container {
+      width: 90%;  
+      max-width: 1200px;  
+      margin: 20px 0;
+    }
+    .table-responsive {
+      overflow-x: auto;
+    }
+    .bottom-right-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="content-wrapper">
+    <div class="row">
+      <div class="col-md-12 grid-margin">
+        <div class="row">
+          <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+            <h3 class="font-weight-bold">Liste des consultations</h3>
+          </div>
+        </div>
+        <div class="centered-container">
+          <div class="table-container">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title"></h4>
+                <div class="table-responsive">
+                  <table class="table" id="consultation-table">
+                    <thead>
+                      <tr>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>CNI</th>
+                        <th>Date et Heure</th>
+                        <th>Maladie</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for consultation in consultations %}
+                      <tr>
+                        <td>{{ consultation.rendez_vous.patient.nom }}</td>
+                        <td>{{ consultation.rendez_vous.patient.prenom }}</td>
+                        <td>{{ consultation.rendez_vous.patient.cni }}</td>
+                        <td>{{ consultation.rendez_vous.date_time }}</td>
+                        <td>{{ consultation.maladie.nom }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary bottom-right-button" onclick="imprimerConsultations()">Imprimer</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    function imprimerConsultations() {
+      window.print();
+    }
+  </script>
+</body>
+</html>
+{% endblock content %}

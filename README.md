@@ -21,8 +21,6 @@ Avant de commencer, assurez-vous d'avoir installé les éléments suivants :
 - Django 5.x
 
 
-```
-
 ## Utilisation 💡
 1. **Se connecter comme Médecin** : Seuls les médecins peuvent ajouter des secrétaires et accéder aux prédictions de maladies.
 2. **Ajouter des Secrétaires** : Les secrétaires peuvent être ajoutés par un médecin via le formulaire d'ajout.

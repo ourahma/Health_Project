@@ -5,6 +5,8 @@ from django.contrib.auth import authenticate, logout, login as auth_login
 from .fonctions import *
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from reportlab.lib.pagesizes import letter
+from textwrap import wrap
 from .models import *
 from .predictions import *
 from django.core.files.storage import default_storage
@@ -597,38 +599,46 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from reportlab.pdfgen import canvas
 
+def draw_wrapped_text(p, text, x, y, max_width):
+    """
+    Fonction pour dessiner du texte en gérant le retour à la ligne.
+    """
+    wrapped_text = wrap(text, width=max_width//7)  # Ajuster le facteur si besoin
+    for line in wrapped_text:
+        p.drawString(x, y, line)
+        y -= 20  # Espacement entre les lignes
+    return y  # Retourner la nouvelle position Y
+
 def generer_rapport(request, consultation_id):
     consultation = get_object_or_404(Consultation, id=consultation_id)
 
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="rapport_{consultation.rendez_vous.patient.nom}_{consultation.rendez_vous.patient.prenom}.pdf"'
 
-    p = canvas.Canvas(response)
-    width, height = p._pagesize
+    p = canvas.Canvas(response, pagesize=letter)
+    width, height = letter
 
     p.setFont("Helvetica-Bold", 16)
     p.drawCentredString(width / 2, 800, "Rapport de consultation")
     p.setFont("Helvetica", 12)
-    
-    # Ajout d'un espace entre le titre et les informations
+
     y_position = 750
-    
-    p.drawString(100, y_position, f"Nom: {consultation.rendez_vous.patient.nom}")
-    p.drawString(100, y_position - 20, f"Prénom: {consultation.rendez_vous.patient.prenom}")
-    p.drawString(100, y_position - 40, f"CNI: {consultation.rendez_vous.patient.cni}")
-    p.drawString(100, y_position - 60, f"Date du rendez-vous: {consultation.rendez_vous.date_time.strftime('%Y-%m-%d %H:%M:%S')}")
-    
+
+    # Affichage des informations
+    y_position = draw_wrapped_text(p, f"Nom: {consultation.rendez_vous.patient.nom}", 100, y_position, 400)
+    y_position = draw_wrapped_text(p, f"Prénom: {consultation.rendez_vous.patient.prenom}", 100, y_position - 20, 400)
+    y_position = draw_wrapped_text(p, f"CNI: {consultation.rendez_vous.patient.cni}", 100, y_position - 20, 400)
+    y_position = draw_wrapped_text(p, f"Date du rendez-vous: {consultation.rendez_vous.date_time.strftime('%Y-%m-%d %H:%M:%S')}", 100, y_position - 20, 400)
+
     if consultation.maladie:
-        p.drawString(100, y_position - 80, f"Maladie: {consultation.maladie.nom}")
-        p.drawString(100, y_position - 100, f"Symptômes: {consultation.maladie.symptoms}")
-        p.drawString(100, y_position - 120, f"Traitements: {consultation.maladie.traitements}")
+        y_position = draw_wrapped_text(p, f"Maladie: {consultation.maladie.nom}", 100, y_position - 20, 400)
+        y_position = draw_wrapped_text(p, f"Symptômes: {consultation.maladie.symptoms}", 100, y_position - 20, 400)
+        y_position = draw_wrapped_text(p, f"Traitements: {consultation.maladie.traitements}", 100, y_position - 20, 400)
     else:
-        p.drawString(100, y_position - 80, "Maladie: Non spécifiée")
+        y_position = draw_wrapped_text(p, "Maladie: Non spécifiée", 100, y_position - 20, 400)
 
     p.showPage()
     p.save()
-    return response
-
     return response
 
 

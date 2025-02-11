@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import base64
 from django.http import JsonResponse
 from io import BytesIO
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from django.db.models import Count, Sum
 import io
 
@@ -127,4 +127,31 @@ def plot_consultation_validation_status(request):
     }
 
     return JsonResponse(data)
+
+def statistiques_maladies(request):
+   
+    maladie_counts = PredictionMaladieHistorique.objects.values('maladie_predite__nom').annotate(count=Count('maladie_predite'))
+    labels_pie = [entry['maladie_predite__nom'] for entry in maladie_counts] 
+    data_pie = [entry['count'] for entry in maladie_counts]
+
+    today = date.today()
+    last_6_months = [(today - timedelta(days=30*i)).strftime('%Y-%m') for i in range(5, -1, -1)]
+
+
+    evolution_data = {maladie['maladie_predite__nom']: [0]*6 for maladie in maladie_counts}
+
+    # Remplissage des données pour chaque mois
+    for i, month in enumerate(last_6_months):
+        month_count = PredictionMaladieHistorique.objects.filter(date_prediction__startswith=month).values('maladie_predite__nom').annotate(count=Count('maladie_predite'))
+        
+        for entry in month_count:
+            if entry['maladie_predite__nom'] in evolution_data:
+                evolution_data[entry['maladie_predite__nom']][i] = entry['count']
+
+    return JsonResponse({
+        'labels_pie': labels_pie,
+        'data_pie': data_pie,
+        'labels_line': last_6_months,
+        'evolution_data': evolution_data
+    })
 

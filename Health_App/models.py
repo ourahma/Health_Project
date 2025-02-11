@@ -168,7 +168,7 @@ class PredictionDiabete(models.Model):
 
 class PredictionMaladieHistorique(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="predictions_maladie")
-    maladie_predite = models.CharField(max_length=255)
+    maladie_predite = models.ForeignKey(Maladie, on_delete=models.CASCADE, related_name="maladie_patient")
     date_prediction = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

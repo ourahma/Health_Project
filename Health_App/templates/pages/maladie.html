@@ -79,17 +79,18 @@
                     <form method="POST">
                       {% csrf_token %}
                       <td>
-                        <input type="text" class="form-control" name="nom" value="{{ maladie.nom }}" required>
+                        <textarea class="form-control"  name="nom" required>{{ maladie.nom }}</textarea>
                       </td>
                       <td>
-                        <input type="text" class="form-control" name="symptoms" value="{{ maladie.get_symptoms_list|join:',' }}" required>
+                        <textarea class="form-control" rows="4" cols="20" name="symptoms" required>{{ maladie.get_symptoms_list|join:',' }}</textarea>
                       </td>
                       <td>
-                        <input type="text" class="form-control" name="description" value="{{ maladie.description }}" required>
+                        <textarea class="form-control" rows="4" cols="20" name="description" required>{{ maladie.description }}</textarea>
                       </td>
                       <td>
-                        <input type="text" class="form-control" name="traitements" value="{{ maladie.get_traitements_list|join:',' }}" required>
+                        <textarea class="form-control" rows="4" cols="20" name="traitements" required>{{ maladie.get_traitements_list|join:',' }}</textarea>
                       </td>
+                      
                       <td>
                         <input type="hidden" name="maladie_id" value="{{ maladie.id }}">
                         <button type="submit" name="action" value="modifier" class="btn btn-warning btn-sm">Modifier</button>

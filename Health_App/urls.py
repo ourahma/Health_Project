@@ -34,7 +34,7 @@ urlpatterns = [
     path('consultation-validation-status/', views.consultation_validation_status_view, name='consultation_validation_status'),
     path('statistiques-diabete/', views.statistiques_diabete, name='statistiques_diabete'),
     path('evolution_statistiques_diabete/', views.evolution_statistiques_diabete, name='evolution_statistiques_diabete'),
-    path("statistiques-maladies/", views.statistiques_maladies, name="statistiques_maladies"),
+    path("statistiques-maladies/", views.statistiques_maladies_view, name="statistiques_maladies"),
     
     
     path('afficher_consultations', views.afficher_consultations, name='afficher_consultations'),

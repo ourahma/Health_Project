@@ -18,7 +18,7 @@ User = get_user_model()
 ### Return index page
 def home(request):
     context=statistiques_dans_dashboard(request)
-    print(f"User: {request.user} | is_medcin(): {request.user.is_medcin()}")
+   
 
     return render(request, 'pages/index.html', context)
 
@@ -36,9 +36,10 @@ def login_view(request):
         password = request.POST.get('mdp')
         
         user = authenticate(request, email=email, password=password)
-        print("user is ---> ",user)
+       
         if user and (isinstance(user, Medcin) or isinstance(user, Secretaire)):
             auth_login(request, user)
+            messages.success(request, "Vous êtes avec succes")
             return redirect("home")
         else:
             messages.error(request, "Vous n'avez pas accès, vous devez être un Medcin ou un Secretaire")
@@ -115,15 +116,7 @@ def classification_maladie(request):
         conjonctive=int(request.POST.get('conjonctive'))
         age=int(request.POST.get('age'))
         fievere=int(request.POST.get('fievere'))
-        print("patient_id",patient_id)
-        print("sexe",sexe)
-        print("toux",toux)
-        print("fatigue",fatigue)
-        print("douleur",douleur)
-        print("eruption",eruption)
-        print("difficulte_respiratoires",difficulte_respiratoires)
-        print("conjonctive",conjonctive)
-        print("age",age)
+ 
     
         if any(v is None or v == "" for v in [age, sexe, toux, fatigue, douleur, eruption, difficulte_respiratoires, conjonctive]):
             messages.error(request, "Tous les champs sont obligatoires.")
@@ -155,7 +148,7 @@ def classification_maladie(request):
         # Enregistrement dans la base de données
         historique=PredictionMaladieHistorique.objects.create(
             patient=patient,
-            maladie_predite=maladie.nom
+            maladie_predite=maladie
         )
         print("l'objet d'historique ",historique )
         messages.success(request, "Prédiction effectuée avec succès.")
@@ -163,7 +156,7 @@ def classification_maladie(request):
             'patients': patients,
             'prediction': maladie.nom,
             'patient': patient,
-            'maladie_predite': maladie,
+            'maladie_predite': maladie.nom,
             'probabilities': pourcentage 
         })
 
@@ -219,7 +212,7 @@ def gerersecretaires(request):
     
 @login_required
 def supprimer_secretaire(request, secretaire_id):
-    print("supprimer is triggered")
+   
     secretaire = get_object_or_404(Secretaire, id=secretaire_id)
 
     if not request.user.is_medcin():
@@ -304,7 +297,7 @@ def modifier_maladie(request, maladie_id):
 ###################################################################
 def maladie(request):
     maladies = Maladie.objects.all()
-    print(f"Maladies trouvées: {maladies}")  # Ajoute ceci
+   
     return render(request, 'pages/maladie.html',{'maladies': maladies})
 def modifier_maladie(request, maladie_id):
     maladie = get_object_or_404(Maladie, id=maladie_id)
@@ -683,32 +676,8 @@ def evolution_statistiques_diabete(request):
 
     return JsonResponse(data)
 
-def statistiques_maladies(request):
-    # 🔹 Répartition des maladies prédites (Pie Chart)
-    maladie_counts = PredictionMaladieHistorique.objects.values('maladie_predite').annotate(count=Count('maladie_predite'))
-    labels_pie = [entry['maladie_predite'] for entry in maladie_counts]
-    data_pie = [entry['count'] for entry in maladie_counts]
-
-    # 🔹 Évolution des maladies prédites au fil du temps (Line Chart)
-    today = date.today()
-    last_6_months = [(today - timedelta(days=30*i)).strftime('%Y-%m') for i in range(5, -1, -1)]
-    
-    evolution_data = {maladie['maladie_predite']: [0]*6 for maladie in maladie_counts}
-
-    for i, month in enumerate(last_6_months):
-        month_count = PredictionMaladieHistorique.objects.filter(date_prediction__startswith=month).values('maladie_predite').annotate(count=Count('maladie_predite'))
-        
-        for entry in month_count:
-            if entry['maladie_predite'] in evolution_data:
-                evolution_data[entry['maladie_predite']][i] = entry['count']
-    print(labels_pie)
-    print(data_pie)
-    return JsonResponse({
-        'labels_pie': labels_pie,
-        'data_pie': data_pie,
-        'labels_line': last_6_months,
-        'evolution_data': evolution_data
-    })
+def statistiques_maladies_view(request):
+    return statistiques_maladies(request)
 
 
 def search_maladies(request):

@@ -9,7 +9,7 @@
     {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
         <div class="alert alert-error" id="alert-{{ forloop.counter }}">
             <div class="icon__wrapper">
-                <i class="bi bi-ban-fill"></i>
+                <i class="bi bi-ban-fill" style="margin-left:10px;"></i>
             </div>
             <p>
               Erreur <br>
@@ -21,7 +21,7 @@
     {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
         <div class="alert alert-warning" id="alert-{{ forloop.counter }}">
             <div class="icon__wrapper">
-                <span class="mdi mdi-alert-outline"></span>
+                <span class="mdi mdi-alert-outline" style="margin-left:10px;"></span>
             </div>
             <p>
               Attention <br>
@@ -33,19 +33,19 @@
     {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
         <div class="alert alert-info" id="alert-{{ forloop.counter }}">
             <div class="icon__wrapper">
-                <span class="mdi mdi-alert-outline"></span>
+                <span class="mdi mdi-alert-outline" style="margin-left:10px;"></span>
             </div>
             <p>
               Informations <br>
               {{ message }}
             </p>
-            <span class="mdi mdi-open-in-new open"></span>
+            <span class="mdi mdi-open-in-new open" ></span>
             <button class="close" onclick="dismissAlert('{{ forloop.counter }}')">&times;</button>
         </div>
     {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
         <div class="alert alert-success" id="alert-{{ forloop.counter }}">
             <div class="icon__wrapper">
-              <i class="bi bi-check-circle-fill"></i>
+              <i class="bi bi-check-circle-fill" style="margin-left:10px;"></i>
             </div>
             <p>
               Succès <br>

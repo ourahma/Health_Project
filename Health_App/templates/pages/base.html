@@ -69,31 +69,19 @@
         <div
           class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center"
         >
-          <a class="navbar-brand brand-logo mr-5" href="index.html"
+          <a class="navbar-brand brand-logo mr-5" href=""
             ><img src="{% static 'images/logo.png' %} " class="mr-2" alt="logo"
           /></a>
-          <a class="navbar-brand brand-logo-mini" href="index.html"
-            ><img src="{% static 'images/favicon.png' %} " alt="logo"
-          /></a>
+         
         </div>
-        <div
-          class="navbar-menu-wrapper d-flex align-items-center justify-content-end"
-        >
-          <button
-            class="navbar-toggler navbar-toggler align-self-center"
-            type="button"
-            data-toggle="minimize"
-          >
+       
+        <div class="navbar-menu-wrapper d-flex align-items-start justify-content-start">
+          <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="icon-menu"></span>
           </button>
           
           <ul class="navbar-nav navbar-nav-right">
-            <li class="nav-item dropdown">
-              <div
-                class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
-                aria-labelledby="notificationDropdown"
-              ></div>
-            </li>
+         
             <li class="nav-item nav-profile dropdown">
               <a class="dropdown-item" href="{% url 'logout' %}">
                 <i class="ti-power-off text-primary"></i>
@@ -106,26 +94,37 @@
 
       <div class="container-fluid page-body-wrapper">
         <!-- Side Bar -->
-        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <nav class="sidebar sidebar-offcanvas" id="navbarResponsive">
           <ul class="nav">
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href=""
+              >
+              {% if request.user.profile_picture %}
+              <img src="{{ request.user.profile_picture.url }}" alt="">
+              {% else %}
+              <i class="fas fa-user"  style="margin-right: 10px;"></i>
+              {% endif %}
+              
+              
+              
+                <span class="menu-title"> {{ request.user.nom }} {{ request.user.prenom }} </span>
+              </a>
+            </li>
+
             <li class="nav-item">
               <a
                 class="nav-link {% if request.path == '/' %}active{% endif %}"
                 href="{% url 'home' %}"
               >
               <i class="fas fa-tachometer-alt"  style="margin-right: 10px;"></i>
-              <p>  </p>
+              
                 <span class="menu-title">Dashboard</span>
               </a>
             </li>
 
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'maladie' %}">
-                <i class="fas fa-virus"  style="margin-right: 10px;"></i>
-
-                <span class="menu-title">Les maladies</span>
-              </a>
-            </li>
+           
             
             <li class="nav-item">
               <a
@@ -147,7 +146,13 @@
               </a>
             </li>
             {% if request.user.is_medcin %}
-           
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'maladie' %}">
+                <i class="fas fa-virus"  style="margin-right: 10px;"></i>
+
+                <span class="menu-title">Les maladies</span>
+              </a>
+            </li>
               <li class="nav-item">
                 <a
                   class="nav-link {% if request.path == '/diabetes_prediction/' %}active{% endif %}"
@@ -179,7 +184,7 @@
           </ul>
         </nav>
         <!-- Main content -->
-        <div class="main-panel">
+        <div class="main-panel" style="width: 100%;">
           {% block content %} {% endblock content %}
 
           <!-- partial:partials/_footer.html -->
@@ -236,7 +241,17 @@
             link.style.borderBottom = ""; // Reset underline
           }
         });
+
+          let navbarToggler = document.querySelector(".navbar-toggler");
+          let navbarWrapper = document.querySelector(".navbar-menu-wrapper");
+          let navbarBrandWrapper = document.querySelector(".navbar-brand-wrapper");
+    
+              navbarToggler.addEventListener("click", function () {
+              navbarWrapper.classList.toggle("navbar-collapsed");
+              navbarBrandWrapper.classList.toggle("navbar-collapsed");
+          });
       });
     </script>
+   
   </body>
 </html>

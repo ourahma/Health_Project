@@ -30591,5 +30591,14 @@ div.tagsinput span.tag a {
     display: none;
   }
 }
+/* Animation pour la réduction du navbar */
+.navbar-menu-wrapper {
+    transition: all 0.5s ease-in-out;
+}
+
+/* Masquer le logo lorsque le menu est réduit */
+.navbar-collapsed .navbar-brand {
+    display: none !important;
+}
 
 /*# sourceMappingURL=../maps/vertical-layout-light/style.css.map */

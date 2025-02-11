@@ -10,7 +10,7 @@ from .predictions import *
 from django.core.files.storage import default_storage
 from .forms import *
 from django.utils import timezone
-from datetime  import datetime
+from datetime  import datetime, date
 
 User = get_user_model()
 @login_required
@@ -690,8 +690,8 @@ def statistiques_maladies(request):
     data_pie = [entry['count'] for entry in maladie_counts]
 
     # 🔹 Évolution des maladies prédites au fil du temps (Line Chart)
-    today = datetime.date.today()
-    last_6_months = [(today - datetime.timedelta(days=30*i)).strftime('%Y-%m') for i in range(5, -1, -1)]
+    today = date.today()
+    last_6_months = [(today - timedelta(days=30*i)).strftime('%Y-%m') for i in range(5, -1, -1)]
     
     evolution_data = {maladie['maladie_predite']: [0]*6 for maladie in maladie_counts}
 
@@ -701,7 +701,8 @@ def statistiques_maladies(request):
         for entry in month_count:
             if entry['maladie_predite'] in evolution_data:
                 evolution_data[entry['maladie_predite']][i] = entry['count']
-
+    print(labels_pie)
+    print(data_pie)
     return JsonResponse({
         'labels_pie': labels_pie,
         'data_pie': data_pie,

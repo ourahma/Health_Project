@@ -19,47 +19,8 @@ Health App est un système de gestion médicale complet destiné aux cabinets m�
 Avant de commencer, assurez-vous d'avoir installé les éléments suivants :
 - Python 3.x
 - Django 5.x
-- PostgreSQL (si vous utilisez PostgreSQL comme base de données)
-- Pip (pour installer les dépendances)
 
-## Installation 📦
-1. Clonez le dépôt GitHub :
-    ```bash
-    git clone https://github.com/votre_utilisateur/Health-App.git
-    cd Health-App
-    ```
-2. Créez un environnement virtuel et activez-le :
-    ```bash
-    python -m venv env
-    source env/bin/activate  # Sur Linux/Mac
-    env\Scriptsctivate  # Sur Windows
-    ```
-3. Installez les dépendances :
-    ```bash
-    pip install -r requirements.txt
-    ```
-4. Appliquez les migrations de base de données :
-    ```bash
-    python manage.py migrate
-    ```
-5. Démarrez le serveur de développement :
-    ```bash
-    python manage.py runserver
-    ```
 
-## Structure du projet 📁
-Le projet est organisé comme suit :
-```
-Health-App/
-│
-├── manage.py                  # Script principal pour exécuter le projet
-├── Health_App/                 # Dossier contenant les fichiers de l'application
-│   ├── models.py              # Modèles de données
-│   ├── views.py               # Logique des vues
-│   ├── templates/             # Templates HTML
-│   └── static/                # Fichiers statiques (CSS, JS, images)
-│
-└── requirements.txt           # Liste des dépendances
 ```
 
 ## Utilisation 💡
@@ -74,26 +35,13 @@ Health-App/
 Voici quelques captures d'écran de l'application pour mieux visualiser son fonctionnement :
 
 - **Page d'Accueil** :
-  ![Page d'Accueil](./screenshot/homepage.png)
+  ![Page d'Accueil]
   
 - **Gestion des Maladies** :
-  ![Gestion des Maladies](./screenshot/diseases_management.png)
+  ![Gestion des Maladies]
 
 - **Tableau de Bord** :
-  ![Tableau de Bord](./screenshot/dashboard.png)
+  ![Tableau de Bord]
 
 - **Page de Consultation** :
-  ![Page de Consultation](./screenshot/consultation_page.png)
-
-## Contribuer 🤝
-1. Fork ce repository.
-2. Créez une branche pour vos changements : `git checkout -b feature/nom_de_feature`.
-3. Commitez vos changements : `git commit -m 'Ajout de feature'`.
-4. Poussez vos changements : `git push origin feature/nom_de_feature`.
-5. Soumettez une pull request.
-
-## Auteurs 👩‍💻👨‍💻
-- **Maroua** : Développement et conception du projet.
-  
-## Licence 📄
-Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de détails.
+  ![Page de Consultation]

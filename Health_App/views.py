@@ -10,7 +10,7 @@ from .predictions import *
 from django.core.files.storage import default_storage
 from .forms import *
 from django.utils import timezone
-import datetime
+from datetime  import datetime
 
 User = get_user_model()
 @login_required

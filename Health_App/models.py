@@ -122,6 +122,11 @@ class Maladie(models.Model):
 
     def _str_(self):
         return self.nom
+    
+    @classmethod
+    def search_by_nom(cls, search_term):
+        
+        return cls.objects.filter(nom__icontains=search_term)
 
 
 

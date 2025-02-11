@@ -708,3 +708,14 @@ def statistiques_maladies(request):
         'labels_line': last_6_months,
         'evolution_data': evolution_data
     })
+
+
+def search_maladies(request):
+    search_term = request.GET.get('search', '')
+    if search_term:
+        # Recherche dans le nom des maladies
+        maladies = Maladie.objects.filter(nom__icontains=search_term)  # Recherche insensible à la casse
+    else:
+        maladies = Maladie.objects.all()  # Affiche toutes les maladies si aucune recherche
+
+    return render(request, 'pages/maladie.html', {'maladies': maladies, 'search_term': search_term})

@@ -12,7 +12,7 @@ urlpatterns = [
      
     path('maladie/', views.maladie, name='maladie'),
     path('modifier_maladie/<int:maladie_id>/', views.modifier_maladie, name='modifier_maladie'),
-    
+    path('maladies/rechercher/', views.search_maladies, name='search_maladies'),
     
     ## la prédiction sur le diabetes    
     path("diabetes_prediction/", views.diabetes_prediction, name="diabetes_prediction"),

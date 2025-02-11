@@ -2,6 +2,7 @@ import joblib
 import numpy as np
 from django.conf import settings
 import os
+import pandas as pd
 
 def load_model():
     model_path = "E:\Documents\PE\Master\S1\python\projet\Health_App\ML_models\knn_model.pkl"
@@ -32,8 +33,8 @@ def make_diabetes_prediction(glucose, insulin, bmi, age):
 
 
 # Load the trained model
-def load_cancer_model():
-    model_path = "E:\\Documents\\PE\\Master\\S1\\python\\Health_Project\\Health_Project\\Health_App\\ML_models\\cancer_detection_model.pkl"
+def load_maladie_classification_model():
+    model_path = "E:\Documents\PE\Master\S1\python\projet\Health_App\ML_models\model_maladies.pkl"
     try:
         model = joblib.load(model_path)
         return model
@@ -41,22 +42,16 @@ def load_cancer_model():
         print("Cancer Model file not found.")
         return None
 
-def make_cancer_prediction(radius_mean, texture_mean, perimeter_mean, area_mean):
-    model = load_cancer_model()
-    if not model:
-        return "Model loading failed", None
+classes = [ "Grippe", "Rougeole","COVID-19"] 
 
-    # Prepare input array (ensure correct shape)
-    input_features = np.array([[radius_mean, texture_mean, perimeter_mean, area_mean]], dtype=np.float64)
-
-    print("Input Shape for Model:", input_features.shape)  # Debugging output (should be (1, 4))
-
-    # Predict the probability
-    prediction_proba = model.predict_proba(input_features)[0][1]
-
-    # Determine prediction and probability percentage
-    prediction = "Malignant" if prediction_proba > 0.5 else "Benign"
-    probability_percentage = round(prediction_proba * 100, 2)
-
-    return prediction, probability_percentage
-
+def maladie_classification(data):
+    model=load_maladie_classification_model()
+    df = pd.DataFrame([data])  # Convertir en DataFrame
+    prediction = model.predict(df)[0]  # Faire la prédiction
+    print(prediction)
+    probabilities = model.predict_proba(df)[0]  # Obtenir les probabilités des classes
+    
+    # Associer chaque maladie à sa probabilité
+    probability_dict = {classes[i]: round(probabilities[i] * 100, 2) for i in range(len(classes))}
+    max_class = max(probability_dict, key=probability_dict.get)
+    return max_class, probability_dict

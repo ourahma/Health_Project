@@ -16,7 +16,7 @@ urlpatterns = [
     
     ## la prédiction sur le diabetes    
     path("diabetes_prediction/", views.diabetes_prediction, name="diabetes_prediction"),
-    
+    path("classification_maladie/", views.classification_maladie, name="classification_maladie"),
     
     
     
@@ -34,7 +34,7 @@ urlpatterns = [
     path('consultation-validation-status/', views.consultation_validation_status_view, name='consultation_validation_status'),
     path('statistiques-diabete/', views.statistiques_diabete, name='statistiques_diabete'),
     path('evolution_statistiques_diabete/', views.evolution_statistiques_diabete, name='evolution_statistiques_diabete'),
-    
+    path("statistiques-maladies/", views.statistiques_maladies, name="statistiques_maladies"),
     
     
     path('afficher_consultations', views.afficher_consultations, name='afficher_consultations'),

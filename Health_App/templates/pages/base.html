@@ -113,14 +113,16 @@
                 class="nav-link {% if request.path == '/' %}active{% endif %}"
                 href="{% url 'home' %}"
               >
-                <i class="icon-grid menu-icon"></i>
+              <i class="fas fa-tachometer-alt"  style="margin-right: 10px;"></i>
+              <p>  </p>
                 <span class="menu-title">Dashboard</span>
               </a>
             </li>
 
             <li class="nav-item">
               <a class="nav-link" href="{% url 'maladie' %}">
-                <i class="icon-grid menu-icon"></i>
+                <i class="fas fa-virus"  style="margin-right: 10px;"></i>
+
                 <span class="menu-title">Les maladies</span>
               </a>
             </li>
@@ -130,7 +132,7 @@
                 class="nav-link "
                  href="{% url 'rendez_vous' %}"
               >
-                <i class="icon-grid menu-icon"></i>
+              <i class="fas fa-calendar-check"  style="margin-right: 10px;"></i>
                 <span class="menu-title">Les Rendez-Vous</span>
               </a>
             </li>
@@ -140,7 +142,7 @@
                 class="nav-link "
                   href="{% url 'consultation_view' %}"
               >
-                <i class="icon-grid menu-icon"></i>
+              <i class="fas fa-stethoscope"  style="margin-right: 10px;"></i>
                 <span class="menu-title">Les consultations</span>
               </a>
             </li>
@@ -151,21 +153,29 @@
                   class="nav-link {% if request.path == '/diabetes_prediction/' %}active{% endif %}"
                   href="{% url 'diabetes_prediction' %}"
                 >
-                  <i class="icon-grid menu-icon"></i>
+                <i class="fas fa-chart-line"  style="margin-right: 10px;"></i>
                   <span class="menu-title">Prédiction</span>
                 </a>
               </li>
-            </li>
-            {% endif %} 
-            {% if request.user.is_medcin %}
-
+            
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'secretaires' %}">
-                <i class="mdi mdi-account-multiple"></i>
-                <span class="menu-title">Vos secretaires</span>
+              <a
+                class="nav-link {% if request.path == '/classification_maladie/' %}active{% endif %}"
+                href="{% url 'classification_maladie' %}"
+              >
+              <i class="fas fa-dna" style="margin-right: 10px;"></i>
+                <span class="menu-title">Classifier des maladies</span>
               </a>
             </li>
-            {% endif %}
+          
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'secretaires' %}">
+              <i class="mdi mdi-account-multiple"  style="margin-right: 10px;"></i>
+              <span class="menu-title">Vos secretaires</span>
+            </a>
+          </li>
+            {% endif %} 
+            
           </ul>
         </nav>
         <!-- Main content -->

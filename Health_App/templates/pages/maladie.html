@@ -56,15 +56,16 @@
                       {% csrf_token %}
                       <td>
                         <input type="text" class="form-control" name="nom" value="{{ maladie.nom }}" required>
+                        
                       </td>
                       <td>
-                        <input type="text" class="form-control" name="symptoms" value="{{ maladie.get_symptoms_list|join:', ' }}" required>
+                        <input type="text" class="form-control" name="symptoms" value="{{ maladie.get_symptoms_list|join:',' }}" required>
                       </td>
                       <td>
                         <input type="text" class="form-control" name="description" value="{{ maladie.description }}" required>
                       </td>
                       <td>
-                        <input type="text" class="form-control" name="traitements" value="{{ maladie.traitements|join:', ' }}" required>
+                        <input type="text" class="form-control" name="traitements" value="{{ maladie.get_traitements_list|join:',' }}" required>
                       </td>
                       <td>
                         <input type="hidden" name="maladie_id" value="{{ maladie.id }}">
@@ -82,6 +83,7 @@
                 {% endfor %}
               </tbody>
             </table>
+
           </div>
         </div>
       </div>

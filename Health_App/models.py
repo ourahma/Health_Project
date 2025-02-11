@@ -53,7 +53,8 @@ class Personne(AbstractBaseUser, PermissionsMixin):
     objects = PersonneManager() 
     
     def is_medcin(self):
-        return hasattr(self, 'medcin') and not hasattr(self, 'secretaire')
+        return self.is_superuser 
+
 
 # Patient ne ppeut pas faire login mais herite de Personne
 class Patient(Personne):
@@ -65,6 +66,9 @@ class Patient(Personne):
     def save(self, *args, **kwargs):
         self.is_active = False  # Prevent login
         super().save(*args, **kwargs)
+        
+    def __str__(self):
+        return f"{self.nom} {self.prenom} - {self.cni}"
 
 # Medcin Peut faite log in 
 class Medcin(Personne):
@@ -79,15 +83,11 @@ def get_default_medcin():
 # Secretaire 
 class Secretaire(models.Model): 
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, related_name="secretaire_profile")
-    nom = models.CharField(max_length=100)
-    prenom = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)  
-    mdp = models.CharField(max_length=100)
     profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
     medcin = models.ForeignKey(Medcin, on_delete=models.CASCADE)
     phone_number= models.CharField(max_length=15, null=True, blank=True)
     def __str__(self):
-        return f"{self.nom} {self.prenom}"
+        return f"Secretaire {self.user.nom} {self.user.prenom}"
 
 
 
@@ -144,7 +144,7 @@ class Consultation(models.Model):
     rendez_vous = models.OneToOneField('RendezVous', on_delete=models.CASCADE, related_name="consultation")
 
     def _str_(self):
-        return f"Consultation {self.id} - {self.patient.nom} {self.patient.prenom}"
+        return f"Consultation {self.id} - {self.patient.nom} {self.patient.maladie}"
     
     
     
@@ -160,3 +160,11 @@ class PredictionDiabete(models.Model):
 
     def __str__(self):
         return f"Prédiction {self.id} - {self.patient.nom} - {'Diabétique' if self.resultat else 'Non diabétique'}"
+
+class PredictionMaladieHistorique(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="predictions_maladie")
+    maladie_predite = models.CharField(max_length=255)
+    date_prediction = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Prédiction {self.id} - {self.patient.nom} - {self.maladie_predite}"

@@ -1,0 +1,152 @@
+{% extends 'pages/base.html' %} {% load static %} {% block content %}
+<div class="container-scroller">
+  <div class="container-fluid page-body-wrapper full-page-wrapper">
+    <div class="content-wrapper d-flex align-items-center auth px-0">
+      <div class="row w-100 mx-0">
+        <div class="col-lg-10 mx-auto">
+          <div class="auth-form-light text-left py-5 px-4 px-sm-5">
+            <h6 class="font-weight-light">
+              Saisir les données pour la prédiction de Rougeole, Grippe ou
+              COVID-19
+            </h6>
+            <form
+              class="pt-3"
+              method="POST"
+              action="{% url 'classification_maladie' %}"
+            >
+              {% csrf_token %}
+
+              <!-- Dropdown de sélection du patient -->
+              <div class="form-group">
+                <label for="patient">Patient concerné</label>
+                <select name="patient_id" class="form-control">
+                  <option value="" selected>Choisir un patient</option>
+                  {% for patient in patients %}
+                  <option value="{{ patient.id }}">
+                    {{ patient.nom }} {{ patient.prenom }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="age" class="col-sm-3 col-form-label">Age</label>
+                <input
+                  type="number"
+                  name="age"
+                  class="form-control"
+                  id="age"
+                  placeholder="Age"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <select name="sexe" class="form-control">
+                  <option value="1" selected>Femme</option>
+                  <option value="0" selected>Homme</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="fièvre" class="col-sm-3 col-form-label"
+                  >Fièvre</label
+                >
+                <select name="fievere" class="form-control">
+                  <option value="1" selected>Oui</option>
+                  <option value="0" selected>Non</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="Toux" class="col-sm-3 col-form-label">Toux</label>
+                <select name="toux" class="form-control">
+                  <option value="1" selected>Oui</option>
+                  <option value="0" selected>Non</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="Fatigue" class="col-sm-3 col-form-label"
+                  >Fatigue</label
+                >
+                <select name="fatigue" class="form-control">
+                  <option value="1" selected>Oui</option>
+                  <option value="0" selected>Non</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="Douleur" class="col-sm-3 col-form-label"
+                  >Douleur musculaire</label
+                >
+                <select name="douleur" class="form-control">
+                  <option value="1" selected>Oui</option>
+                  <option value="0" selected>Non</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="eruption" class="col-sm-3 col-form-label"
+                  >Eruption cutannée</label
+                >
+                <select name="eruption" class="form-control">
+                  <option value="1" selected>Oui</option>
+                  <option value="0" selected>Non</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label
+                  for="Difficulté respiratoires"
+                  class="col-sm-3 col-form-label"
+                  >Difficulté respiratoires</label
+                >
+                <select name="difficulte_respiratoires" class="form-control">
+                  <option value="1" selected>Oui</option>
+                  <option value="0" selected>Non</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="Conjonctive" class="col-sm-3 col-form-label"
+                  >Conjonctive</label
+                >
+                <select name="conjonctive" class="form-control">
+                  <option value="1" selected>Oui</option>
+                  <option value="0" selected>Non</option>
+                </select>
+              </div>
+
+              <div class="mt-3">
+                <button
+                  type="submit"
+                  class="btn btn-block btn-success btn-lg font-weight-medium auth-form-btn"
+                >
+                  Prédire
+                </button>
+              </div>
+            </form>
+
+            <!-- Affichage du résultat dans une carte -->
+            {% if maladie_predite is not None %}
+            <div class="card mt-4">
+              <div class="card-body">
+                <h5 class="card-title">Résultat de la Prédiction</h5>
+                <p class="card-text">
+                  <strong>Patient :</strong> {{ patient.nom }} {{ patient.prenom }} <br />
+                  <strong>Maladie prédite :</strong>
+                  <span class="text-danger">{{ maladie_predite.nom }}</span>
+                </p>
+
+                <h6 class="mt-3">Probabilités des maladies :</h6>
+                <ul>
+                  {% for maladie, prob in probabilities.items %}
+                  <li><strong>{{ maladie }} :</strong> {{ prob }}%</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

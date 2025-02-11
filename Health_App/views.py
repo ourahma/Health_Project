@@ -10,14 +10,16 @@ from .predictions import *
 from django.core.files.storage import default_storage
 from .forms import *
 from django.utils import timezone
+import datetime
 
-
-
+User = get_user_model()
 @login_required
 @medcin_required
 ### Return index page
 def home(request):
     context=statistiques_dans_dashboard(request)
+    print(f"User: {request.user} | is_medcin(): {request.user.is_medcin()}")
+
     return render(request, 'pages/index.html', context)
 
 
@@ -99,15 +101,78 @@ def diabetes_prediction(request):
 
     return render(request, 'pages/diabetes_prediction.html', {'patients': patients})
 
+def classification_maladie(request):
+    patients = Patient.objects.all()  
+    maladies = Maladie.objects.all()  
+    if request.method == 'POST':
+        patient_id=int(request.POST.get('patient_id'))
+        sexe=int(request.POST.get('sexe'))
+        toux=int(request.POST.get('toux'))
+        fatigue=int(request.POST.get('fatigue'))
+        douleur=int(request.POST.get('douleur'))
+        eruption=int(request.POST.get('eruption'))
+        difficulte_respiratoires=int(request.POST.get('difficulte_respiratoires'))
+        conjonctive=int(request.POST.get('conjonctive'))
+        age=int(request.POST.get('age'))
+        fievere=int(request.POST.get('fievere'))
+        print("patient_id",patient_id)
+        print("sexe",sexe)
+        print("toux",toux)
+        print("fatigue",fatigue)
+        print("douleur",douleur)
+        print("eruption",eruption)
+        print("difficulte_respiratoires",difficulte_respiratoires)
+        print("conjonctive",conjonctive)
+        print("age",age)
+    
+        if any(v is None or v == "" for v in [age, sexe, toux, fatigue, douleur, eruption, difficulte_respiratoires, conjonctive]):
+            messages.error(request, "Tous les champs sont obligatoires.")
+            return render(request, 'pages/maladie_classification.html', {'patients': patients, 'maladies': maladies})
 
+
+        # Récupération du patient
+        patient = get_object_or_404(Patient, id=patient_id)
+        data = {
+            "Âge": age,
+            "Sexe": sexe,
+            "fièvre": fievere,
+            "toux": toux,
+            "fatigue": fatigue,
+            "douleur musculaire": douleur,
+            "éruption cutanée": eruption,
+            "difficulté respiratoire": difficulte_respiratoires,
+            "conjonctivite": conjonctive,
+        }
+        # Prédiction
+        maladie_predite_nom, pourcentage = maladie_classification(data)
+        print("Maladie prédite : ", maladie_predite_nom)  # Vérification du nom de la maladie
+
+        # Vérifie que la maladie existe dans la base de données ou crée-la si nécessaire
+        maladie, created = Maladie.objects.get_or_create(nom=maladie_predite_nom)
+
+        print(f"Maladie {maladie_predite_nom} enregistrée dans la base de données.")
+
+        # Enregistrement dans la base de données
+        historique=PredictionMaladieHistorique.objects.create(
+            patient=patient,
+            maladie_predite=maladie.nom
+        )
+        print("l'objet d'historique ",historique )
+        messages.success(request, "Prédiction effectuée avec succès.")
+        return render(request, 'pages/maladie_classification.html', {
+            'patients': patients,
+            'prediction': maladie.nom,
+            'patient': patient,
+            'maladie_predite': maladie,
+            'probabilities': pourcentage 
+        })
+
+    return render(request, 'pages/maladie_classification.html', {'patients': patients})
 
 
 
 ## gerer les secretaires pour un medcin
-User = get_user_model()
 
-@login_required
-@medcin_required
 def gerersecretaires(request):
     if not request.user.is_medcin():
         messages.error(request, "Seuls les médecins peuvent ajouter des secrétaires.")
@@ -121,34 +186,35 @@ def gerersecretaires(request):
         phone_number = request.POST.get("phone_number")
         photo = request.FILES.get("img")
 
-        # Vérifier que tous les champs sont remplis
+        # Vérifier que tous les champs obligatoires sont remplis
         if not all([nom, prenom, email, password]):
             messages.error(request, "Tous les champs sont obligatoires.")
             return redirect("secretaires")
 
         # Vérifier si l'email est déjà utilisé
         if User.objects.filter(email=email).exists():
-            messages.error(request, "Cet email est déjà utilisé.")
+            messages.error(request, "Un utilisateur avec cet email existe déjà.")
             return redirect("secretaires")
 
         # Créer un utilisateur Secretaire
         user = User.objects.create_user(email=email, password=password, nom=nom, prenom=prenom)
-        user.is_staff = True  # Pour permettre l'accès à l'administration si besoin
+        user.is_staff = True  # Optionnel si le secrétaire a besoin d'un accès admin
         user.save()
 
-        # Associer à un modèle Secretaire
+        # Créer le profil Secretaire
         secretaire = Secretaire.objects.create(
             user=user,
             phone_number=phone_number,
             profile_picture=photo if photo else None,
-            medcin=request.user.medcin
+            medcin=request.user  # Correction ici
         )
 
         messages.success(request, "Secrétaire ajouté avec succès !")
         return redirect("secretaires")
-    
+
     secretaires = Secretaire.objects.all()
     return render(request, 'pages/manage_secretaires.html', {'secretaires': secretaires})
+
     
     
 @login_required
@@ -269,7 +335,7 @@ def modifier_maladie(request, maladie_id):
     
     return redirect('maladie')  # Si ce n'est pas une requête POST, rediriger vers la page des maladies
 
-###################################################################
+
 @login_required
 @medcin_required
 def maladie(request):
@@ -359,7 +425,6 @@ def maladie(request):
 
 @login_required
 @login_required
-
 def rendez(request):
     if request.method == 'POST':
         form = RendezVousForm(request.POST)
@@ -370,22 +435,70 @@ def rendez(request):
     else:
         form = RendezVousForm()
 
-    # Récupérer les rendez-vous en attente
-    rendez_vous_list = Rendezvous.objects.filter(status='en attente')
+    search_date = request.GET.get('search_date', '')  # Récupère la date passée dans la barre de recherche
 
-    # Vérifier les rendez-vous dont la date est dépassée
-    maintenant = timezone.now()
-    rendez_vous_delai_depasse = [rv for rv in rendez_vous_list if rv.date_time < maintenant]
-
-    # S'il existe des rendez-vous dont la date est dépassée, ajouter une alerte
-    if rendez_vous_delai_depasse:
-        messages.error(request, "Il existe des rendez-vous non validés dont la date est dépassée.")
+    if search_date:
+        try:
+            search_date_obj = datetime.strptime(search_date, '%Y-%m-%d')  # Formater la date
+            rendez_vous_list = Rendezvous.objects.filter(date_time__date=search_date_obj.date(), status='en attente')
+        except ValueError:
+            messages.error(request, "Le format de la date est invalide. Utilisez le format AAAA-MM-JJ.")
+            rendez_vous_list = Rendezvous.objects.filter(status='en attente')
+    else:
+        rendez_vous_list = Rendezvous.objects.filter(status='en attente')
 
     return render(request, 'pages/rendez-vous.html', {
         'form': form,
         'rendez_vous_list': rendez_vous_list,
-        'rendez_vous_delai_depasse': rendez_vous_delai_depasse
-        
+        'search_date': search_date  # Passez la date à la template pour la conserver dans le formulaire
+    })
+
+@login_required
+def valider_rendez_vous(request, rendez_vous_id):
+    rendez_vous = get_object_or_404(Rendezvous, id=rendez_vous_id)
+
+    if request.method == "POST":
+        montant = request.POST.get("montant")
+
+        if not montant:
+            messages.error(request, "Veuillez entrer un montant valide.")
+            return redirect("rendez_vous")
+
+        # Convertir en nombre décimal
+        try:
+            montant = float(montant)
+        except ValueError:
+            messages.error(request, "Le montant doit être un nombre valide.")
+            return redirect("rendez_vous")
+
+        # Valider le rendez-vous
+        rendez_vous.status = "validé"
+        rendez_vous.save()
+
+        # Vérifier si une consultation existe déjà pour ce rendez-vous
+        consultation, created = Consultation.objects.get_or_create(
+            rendez_vous=rendez_vous,
+            defaults={"is_validate": True, "patient": rendez_vous.patient, "montant": montant}
+        )
+
+        # Si la consultation existe déjà, on met à jour son montant
+        if not created:
+            consultation.montant = montant
+            consultation.save()
+
+        messages.success(request, "Rendez-vous validé et consultation enregistrée.")
+        return redirect("rendez_vous")
+
+    # Passer la liste des rendez-vous avec leurs consultations
+    rendez_vous_list = Rendezvous.objects.all().prefetch_related("consultation")
+
+    return render(request, "rendez_vous.html", {"rendez_vous_list": rendez_vous_list})
+def liste_rendez_vous_valides(request):
+    # Récupérer les rendez-vous validés
+    rendez_vous_valides = Rendezvous.objects.filter(status='validé').select_related('patient', 'consultation')
+
+    return render(request, 'pages/liste_rendez_vous_valides.html', {
+        'rendez_vous_valides': rendez_vous_valides
     })
 
 
@@ -569,3 +682,29 @@ def evolution_statistiques_diabete(request):
     }
 
     return JsonResponse(data)
+
+def statistiques_maladies(request):
+    # 🔹 Répartition des maladies prédites (Pie Chart)
+    maladie_counts = PredictionMaladieHistorique.objects.values('maladie_predite').annotate(count=Count('maladie_predite'))
+    labels_pie = [entry['maladie_predite'] for entry in maladie_counts]
+    data_pie = [entry['count'] for entry in maladie_counts]
+
+    # 🔹 Évolution des maladies prédites au fil du temps (Line Chart)
+    today = datetime.date.today()
+    last_6_months = [(today - datetime.timedelta(days=30*i)).strftime('%Y-%m') for i in range(5, -1, -1)]
+    
+    evolution_data = {maladie['maladie_predite']: [0]*6 for maladie in maladie_counts}
+
+    for i, month in enumerate(last_6_months):
+        month_count = PredictionMaladieHistorique.objects.filter(date_prediction__startswith=month).values('maladie_predite').annotate(count=Count('maladie_predite'))
+        
+        for entry in month_count:
+            if entry['maladie_predite'] in evolution_data:
+                evolution_data[entry['maladie_predite']][i] = entry['count']
+
+    return JsonResponse({
+        'labels_pie': labels_pie,
+        'data_pie': data_pie,
+        'labels_line': last_6_months,
+        'evolution_data': evolution_data
+    })

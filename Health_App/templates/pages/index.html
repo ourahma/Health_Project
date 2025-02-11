@@ -123,7 +123,27 @@
           </div>
         </div>
       </div>
-      
+      <div class="row">
+        <!-- Répartition des maladies prédites (Pie Chart) -->
+        <div class="col-lg-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Répartition des maladies prédites</h4>
+                    <canvas id="maladiesPieChart"></canvas>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Évolution des maladies prédites (Line Chart) -->
+        <div class="col-lg-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Évolution des prédictions de maladies</h4>
+                    <canvas id="maladiesLineChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
   </div>
 </div>
@@ -300,4 +320,53 @@
         });
     });
 </script>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      fetch("{% url 'statistiques_maladies' %}")  // Mets le bon nom de la vue
+          .then(response => response.json())
+          .then(data => {
+             
+              const ctxPie = document.getElementById('maladiesPieChart').getContext('2d');
+              new Chart(ctxPie, {
+                  type: 'pie',
+                  data: {
+                      labels: data.labels_pie,
+                      datasets: [{
+                          data: data.data_pie,
+                          backgroundColor: ['#93ff7a', '#29285f', '#ffcd56', '#4bc0c0'],
+                          borderColor: ['#1e1e1e', '#8dd968', '#b18393', '#4bc0c0'],
+                          borderWidth: 1
+                      }]
+                  }
+              });
+
+              
+              const ctxLine = document.getElementById('maladiesLineChart').getContext('2d');
+              new Chart(ctxLine, {
+                  type: 'line',
+                  data: {
+                      labels: data.labels_line,
+                      datasets: Object.keys(data.evolution_data).map(maladie => ({
+                          label: maladie,
+                          data: data.evolution_data[maladie],
+                          borderColor: "#" + Math.floor(Math.random()*16777215).toString(16),
+                          backgroundColor: "rgba(10, 231, 21, 0.2)",
+                          fill: true
+                      }))
+                  },
+                  options: {
+                      responsive: true,
+                      scales: {
+                          y: {
+                              beginAtZero: true
+                          }
+                      }
+                  }
+              });
+          });
+  });
+</script>
+
 {% endblock content %}

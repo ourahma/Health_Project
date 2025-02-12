@@ -76,8 +76,8 @@ Voici quelques captures d'écran de l'application pour mieux visualiser son fonc
 
   ## Auteur  
 - Maroua Ourahma.
-    Email : marouaourahma@gmail.com  
-    LinkedIn : [linkedin.com/in/ourahma](www.linkedin.com/in/maroua-ourahma-293426235)
+    - Email : marouaourahma@gmail.com  
+    - LinkedIn : [linkedin.com/in/ourahma](www.linkedin.com/in/maroua-ourahma-293426235)
 - Wiame Annejjar.
 - Aamer Fadma.
 

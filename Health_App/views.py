@@ -94,7 +94,7 @@ def diabetes_prediction(request):
             age=age,
             resultat=prediction
         )
-
+        messages.success(request,"La prédiction est faite avec succès! ")
         return render(request, 'pages/diabetes_prediction.html', {
             'patients': patients,
             'prediction': prediction,

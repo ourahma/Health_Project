@@ -2,7 +2,7 @@
 # Projet Health App
 
 <p align="center">
-  <img src="static/images/logo.png" alt="Logo Health App" width="150" height="150">
+  <img src="Health_App/static/images/logo.png" alt="Logo Health App" width="150" height="150">
 </p>
 
 
@@ -43,32 +43,32 @@ Voici quelques captures d'écran de l'application pour mieux visualiser son fonc
 
 - **Page d'authentification** :
 
-  ![La page de login](static/screenshots/login.png)
+  ![La page de login](Health_App/static/screenshots/login.png)
 
 - **Tableau de Bord**:
 
-  ![La page d'acceuil ](static/screenshots/dashboard.jpeg)
+  ![La page d'acceuil ](Health_App/static/screenshots/dashboard.jpeg)
 
 - **Gestion des Maladies** :
 
-  ![Gestion des Maladies](static/screenshots/maladies.jpeg)
+  ![Gestion des Maladies](Health_App/static/screenshots/maladies.jpeg)
 
 - **La page des rendez-vous** :
 
-  ![Tableau de Bord](static/screenshots/rendez-vous.jpeg)
+  ![Tableau de Bord](Health_App/static/screenshots/rendez-vous.jpeg)
 
 - **Page de Consultation** :
 
-  ![Page de Consultation](static/screenshots/consultations.jpeg)
+  ![Page de Consultation](Health_App/static/screenshots/consultations.jpeg)
 
 - **Page de prédiction de diabète** :
 
-  ![Page de prédiction de daibète](static/screenshots/prediction_diabete.jpeg)
+  ![Page de prédiction de daibète](Health_App/static/screenshots/prediction_diabete.jpeg)
 
 - **Page de classification des maladies (COVID-19, Grippe et Rougeole)** :
 
-  ![Page de classification](static/screenshots/classification_maladies.jpeg)
+  ![Page de classification](Health_App/static/screenshots/classification_maladies.jpeg)
 
 - **Gestion des secètaires** :
 
-  ![Page de Gestion des secrètaires](static/screenshots/crud_secretaires.jpeg)
+  ![Page de Gestion des secrètaires](Health_App/static/screenshots/crud_secretaires.jpeg)

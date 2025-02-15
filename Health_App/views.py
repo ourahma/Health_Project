@@ -14,7 +14,14 @@ from .forms import *
 from django.utils import timezone
 from datetime  import datetime, date
 
+from django.http import HttpResponse
+from reportlab.pdfgen import canvas
+
+
 User = get_user_model()
+
+
+
 @login_required
 @medcin_required
 ### Return index page
@@ -104,6 +111,8 @@ def diabetes_prediction(request):
 
     return render(request, 'pages/diabetes_prediction.html', {'patients': patients})
 
+
+## faire la classification des maladies
 def classification_maladie(request):
     patients = Patient.objects.all()  
     maladies = Maladie.objects.all()  
@@ -140,12 +149,12 @@ def classification_maladie(request):
         }
         # Prédiction
         maladie_predite_nom, pourcentage = maladie_classification(data)
-        print("Maladie prédite : ", maladie_predite_nom)  # Vérification du nom de la maladie
+        
 
         # Vérifie que la maladie existe dans la base de données ou crée-la si nécessaire
         maladie, created = Maladie.objects.get_or_create(nom=maladie_predite_nom)
 
-        print(f"Maladie {maladie_predite_nom} enregistrée dans la base de données.")
+        
 
         # Enregistrement dans la base de données
         historique=PredictionMaladieHistorique.objects.create(
@@ -211,7 +220,7 @@ def gerersecretaires(request):
     return render(request, 'pages/manage_secretaires.html', {'secretaires': secretaires})
 
     
-    
+## supprimer secretaires
 @login_required
 def supprimer_secretaire(request, secretaire_id):
    
@@ -228,7 +237,7 @@ def supprimer_secretaire(request, secretaire_id):
     messages.success(request, "Secrétaire supprimé avec succès !")
     return redirect("secretaires")
 
-
+#modifier seceretaire
 def modifier_secretaire(request, secretaire_id):
     secretaire = get_object_or_404(Secretaire, id=secretaire_id)
 
@@ -258,6 +267,8 @@ def test(request):
     context=statistiques_dans_dashboard(request)
     return render(request, 'pages/test.html',context)
 
+
+### retourner les plots de dashboard
 def generate_plots_view(request):
     return generate_plots(request)
 
@@ -271,36 +282,6 @@ def consultation_validation_status_view(request):
     return plot_consultation_validation_status(request)
 
 
-## la page maladie
-def modifier_maladie(request, maladie_id):
-    maladie = get_object_or_404(Maladie, id=maladie_id)
-    
-    if request.method == "POST":
-        # Récupérer les valeurs soumises par l'utilisateur
-        nom = request.POST.get('nom', maladie.nom).strip()
-        description = request.POST.get('description', maladie.description).strip()
-        symptoms_str = request.POST.get('symptoms', ", ".join(maladie.get_symptoms_list())).strip()
-        traitements_str = request.POST.get('traitements', ", ".join(maladie.traitements)).strip()
-        # Nettoyer et convertir les chaînes en listes
-        symptoms_list = [s.strip() for s in symptoms_str.split(",") if s.strip()]
-        traitements_list = [t.strip() for t in traitements_str.split(",") if t.strip()]
-        # Mettre à jour les champs
-        maladie.nom = nom
-        maladie.description = description
-        maladie.set_symptoms_list(symptoms_list)
-        maladie.set_traitements_list(traitements_list)
-        # Sauvegarder la maladie
-        maladie.save()
-        # Message de succès
-        messages.success(request, "Maladie modifiée avec succès.")
-        return redirect('maladie')  # Rediriger après la modification
-    
-    return redirect('maladie')  # Si ce n'est pas une requête POST, rediriger vers la page des maladies
-###################################################################
-def maladie(request):
-    maladies = Maladie.objects.all()
-   
-    return render(request, 'pages/maladie.html',{'maladies': maladies})
 def modifier_maladie(request, maladie_id):
     maladie = get_object_or_404(Maladie, id=maladie_id)
     
@@ -448,46 +429,8 @@ def rendez(request):
         'search_date': search_date  # Passez la date à la template pour la conserver dans le formulaire
     })
 
-@login_required
-def valider_rendez_vous(request, rendez_vous_id):
-    rendez_vous = get_object_or_404(Rendezvous, id=rendez_vous_id)
 
-    if request.method == "POST":
-        montant = request.POST.get("montant")
 
-        if not montant:
-            messages.error(request, "Veuillez entrer un montant valide.")
-            return redirect("rendez_vous")
-
-        # Convertir en nombre décimal
-        try:
-            montant = float(montant)
-        except ValueError:
-            messages.error(request, "Le montant doit être un nombre valide.")
-            return redirect("rendez_vous")
-
-        # Valider le rendez-vous
-        rendez_vous.status = "validé"
-        rendez_vous.save()
-
-        # Vérifier si une consultation existe déjà pour ce rendez-vous
-        consultation, created = Consultation.objects.get_or_create(
-            rendez_vous=rendez_vous,
-            defaults={"is_validate": True, "patient": rendez_vous.patient, "montant": montant}
-        )
-
-        # Si la consultation existe déjà, on met à jour son montant
-        if not created:
-            consultation.montant = montant
-            consultation.save()
-
-        messages.success(request, "Rendez-vous validé et consultation enregistrée.")
-        return redirect("rendez_vous")
-
-    # Passer la liste des rendez-vous avec leurs consultations
-    rendez_vous_list = Rendezvous.objects.all().prefetch_related("consultation")
-
-    return render(request, "rendez_vous.html", {"rendez_vous_list": rendez_vous_list})
 def liste_rendez_vous_valides(request):
     # Récupérer les rendez-vous validés
     rendez_vous_valides = Rendezvous.objects.filter(status='validé').select_related('patient', 'consultation')
@@ -536,6 +479,8 @@ def valider_rendez_vous(request, rendez_vous_id):
     rendez_vous_list = Rendezvous.objects.all().prefetch_related("consultation")
 
     return render(request, "rendez_vous.html", {"rendez_vous_list": rendez_vous_list})
+
+
 def liste_rendez_vous_valides(request):
     # Récupérer les rendez-vous validés
     rendez_vous_valides = Rendezvous.objects.filter(status='validé').select_related('patient', 'consultation')
@@ -569,14 +514,6 @@ def modifier_rendez_vous(request, rendez_vous_id):
     return render(request, 'pages/modifier_rendez_vous.html', {'form': form, 'rendez_vous': rendez_vous})
 
 
-
-
-
-
-
-
-
-
 def consultation_view(request):
     consultations = Consultation.objects.all().select_related('rendez_vous', 'maladie')
     maladies = Maladie.objects.all()
@@ -595,14 +532,8 @@ def ajouter_maladie(request, consultation_id):
 
 
 
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
-from reportlab.pdfgen import canvas
 
 def draw_wrapped_text(p, text, x, y, max_width):
-    """
-    Fonction pour dessiner du texte en gérant le retour à la ligne.
-    """
     wrapped_text = wrap(text, width=max_width//7)  # Ajuster le facteur si besoin
     for line in wrapped_text:
         p.drawString(x, y, line)

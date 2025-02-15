@@ -72,3 +72,12 @@ Voici quelques captures d'écran de l'application pour mieux visualiser son fonc
 - **Gestion des secètaires** :
 
   ![Page de Gestion des secrètaires](Health_App/static/screenshots/crud_secretaires.jpeg)
+
+
+  ## Auteur  
+- Maroua Ourahma.
+    - Email : marouaourahma@gmail.com  
+    - LinkedIn : [linkedin.com/in/ourahma](www.linkedin.com/in/maroua-ourahma-293426235)
+- Wiame Annejjar.
+- Aamer Fadma.
+
